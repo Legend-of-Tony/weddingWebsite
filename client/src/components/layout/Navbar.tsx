@@ -1,19 +1,23 @@
 
-import Logo from '../../assets/logoPlaceholder.png';
+import Logo from '../../assets/website_logo.png';
 
 const Navbar = () => {
   return (
-    <div className='fixed top-0 right-0 left-0 w-full h-auto bg-amber-300/70 flex p-4 justify-between items-center z-10'>
+    <div className='fixed top-0 right-0  w-auto h-screen bg-amber-300/70 flex flex-col p-10 justify-between items-end  z-10'>
         <div className='flex'>
             <a href="#hero">
-                <img src={Logo} alt="logo" className='w-12 h-12' />
+                <img src={Logo} alt="logo" className='w-20 h-20' />
             </a>
         </div>
-        <ul className='flex gap-4 items-center'>
-            <li><a href="#map">Details</a></li>
-            <li><a href="#donate">Donate</a></li>
+        <ul className='flex flex-col gap-4 items-end'>
+            <li><a href="#map">
+                <button className=' hover:bg-black/50 text-4xl text-white font-bold px-4 pt-2 '>DETAILS</button>
+                <hr className='text-white  w-full'/>
+            </a></li>
+            {/* <li><a href="#donate">Donate</a></li> */}
             <li><a href="#rsvp">
-                    <button className='bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded'>RSVP</button>
+                    <button className=' hover:bg-black/50 text-4xl text-white font-bold px-4 pt-2 '>RSVP</button>
+                    <hr className='text-white  w-full'/>
             </a></li>
         </ul>
     </div>
