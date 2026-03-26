@@ -1,2 +1,31 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Switzer", sans-serif;
+  --font-serif: "Bespoke", serif;
+  --font-title: "Zen Tokyo Zoo", sans-serif;
+
+  --color-primary:#39353B;
+  --color-secondary:#6D1926;
+  --color-accent:#E8DF9E;
+}
+
+@layer base {
+  body {
+   font-size: 16px;
+
+  }
+  h1 {
+    font-family:var(--font-title);
+  }
+  h2, h3, h4, h5, h6 {
+    font-family:var(--font-serif);
+  }
+  p{
+    font-family:var(--font-sans);
+  }
+}
+
+@utility btn-primary {
+  @apply hover:bg-black/50 text-4xl text-white font-extralight px-4 pt-2;
+}
