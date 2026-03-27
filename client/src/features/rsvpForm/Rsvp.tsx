@@ -1,30 +1,37 @@
 import GridLayout from "../../components/layout/GridLayout"
-
+import FormImage from '../../assets/formImage.jpeg'
+import RSVPButton from "../../components/ui/RSVPButton"
 const Rsvp = () => {
   return (
-    <GridLayout id='rsvp' className='w-full h-screen bg-indigo-500'>
-        <div className="col-start-3 col-span-4 row-start-2 row-span-7 justify-center items-center flex flex-col">
-            <h1 className="">RSVP</h1>
-            <form action="" className="flex flex-col w-2/3 h-auto gap-4 items-center justify-center">
-                <label htmlFor="name">Name</label>
-                <input type="text" id="name" name="name" defaultValue='Enter your Name'/>
+    <GridLayout id='rsvp' className='w-full h-screen bg-secondary'>
+           
+            <h1 className="text-7xl text-center col-start-1 col-span-4 row-start-1 row-span-1 items-center pt-24 text-accent">VIP SECTION</h1>
+            <p className="text-4xl font-light text-center col-start-1 col-span-4 row-start-2 row-span-1 items-center pt-24 text-accent">RSVP NOW</p>
 
-                <div className="flex flex-row">
-                    <label htmlFor="partySize">How many guests in your party?</label>
-                    <input type="number" id="partySize" name="partySize" min="1" defaultValue='1'/>
+            <form action="" className=" grid  col-start-2 col-span-2 row-start-3 row-span-3 gap-6 pt-24 w-full h-auto">
+                
+                <div className="grid gap-2 ">
+                    <label htmlFor="name" className="text-accent">Name</label>
+                    <input type="text" id="name" name="name" defaultValue=''className="bg-white rounded-xl px-4"/>
                 </div>
 
-                <div>
-                    <label htmlFor="attending">Will you be attending?</label>
-                    <select id="attending" name="attending">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
+                <div className="grid gap-2">
+                    <label htmlFor="partySize" className="text-accent">How many guests in your party?</label>
+                    <input type="number" id="partySize" name="partySize" min="1" defaultValue='1' className="bg-white rounded-xl outline-none px-4"/>
                 </div>
 
-                <button type="submit" className='bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded'>Submit</button>
+                <div className="grid gap-2 ">
+                    <label htmlFor="attending" className="text-accent">Will you be attending?</label>
+                    <RSVPButton />
+                </div>
+
+                <button type="submit" className='bg-primary hover:bg-accent text-white hover:text-primary font-bold py-2 px-4 rounded '>Submit</button>
+
             </form>
-        </div>
+
+            <div style={{ backgroundImage: `url(${FormImage})` }} className='w-full h-full bg-cover bg-center col-start-5 col-span-4 row-start-1 row-span-9'>
+
+            </div>
     </GridLayout>
   )
 }
