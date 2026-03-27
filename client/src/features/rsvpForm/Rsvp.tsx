@@ -1,7 +1,12 @@
 import GridLayout from "../../components/layout/GridLayout"
 import FormImage from '../../assets/formImage.jpeg'
 import RSVPButton from "../../components/ui/RSVPButton"
+import { useState } from 'react';
+import GuestAutocomplete from '../../components/ui/GuestAutocomplete';
+
 const Rsvp = () => {
+    const [name, setName] = useState('');
+
   return (
     <GridLayout id='rsvp' className='w-full h-screen bg-secondary'>
            
@@ -12,7 +17,8 @@ const Rsvp = () => {
                 
                 <div className="grid gap-2 ">
                     <label htmlFor="name" className="text-accent">Name</label>
-                    <input type="text" id="name" name="name" defaultValue=''className="bg-white rounded-xl px-4"/>
+                    <GuestAutocomplete value={name} onChange={setName} />
+                    {/* <input type="text" id="name" name="name" defaultValue=''className="bg-white rounded-xl px-4"/> */}
                 </div>
 
                 <div className="grid gap-2">
