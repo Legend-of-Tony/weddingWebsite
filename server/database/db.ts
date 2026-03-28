@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
 
-const db = new Database('./server/database/wedding.db');
+const db = new Database('./database/wedding.db');
 
 export default db;
