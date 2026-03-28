@@ -9,7 +9,7 @@ type GridLayoutProps = {
 
 const GridLayout = ({id, className ='', children, style}: GridLayoutProps) => {
   return (
-    <section id={id} className={`grid grid-cols-8 grid-rows-9 gap-4 ${className}`} style={style}>
+    <section id={id} className={`grid grid-cols-1 lg:grid-cols-8 lg:grid-rows-9 gap-4 min-h-screen lg:h-screen ${className}`} style={style}>
         {children}
     </section>
   )

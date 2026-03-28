@@ -7,8 +7,25 @@ import nameSearchRoutes from '../routes/nameSearch.routes.ts';
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://www.jasmenandlucas.com',
+  'https://jasmenandlucas.com',
+];
+
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS blocked'));
+      }
+    },
+  })
+);
+
 
 app.get('/', (req:Request,res:Response)=>{
     res.send('Hello World!');

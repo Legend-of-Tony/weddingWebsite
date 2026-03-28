@@ -10,6 +10,8 @@ type GuestAutocompleteProps = {
   onChange: (value: string) => void;
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const GuestAutocomplete = ({ value, onChange }: GuestAutocompleteProps) => {
   const [matches, setMatches] = useState<Guest[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -24,7 +26,7 @@ const GuestAutocomplete = ({ value, onChange }: GuestAutocompleteProps) => {
 
     try {
       const res = await fetch(
-        `/guests/search?q=${encodeURIComponent(value)}`
+        `${API_URL}/guests/search?q=${encodeURIComponent(value)}`
       );
 
       const data = await res.json();

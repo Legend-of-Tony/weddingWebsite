@@ -8,12 +8,12 @@ const Rsvp = () => {
     const [name, setName] = useState('');
 
   return (
-    <GridLayout id='rsvp' className='w-full h-screen bg-secondary'>
+    <GridLayout id='rsvp' className='w-full bg-secondary'>
            
-            <h1 className="text-7xl text-center col-start-1 col-span-4 row-start-1 row-span-1 items-center pt-24 text-accent">VIP SECTION</h1>
-            <p className="text-4xl font-light text-center col-start-1 col-span-4 row-start-2 row-span-1 items-center pt-24 text-accent">RSVP NOW</p>
+            <h1 className="text-7xl text-center lg:col-start-1 lg:col-span-4 lg:row-start-1 row-span-1 items-center pt-24 lg:px-0 px-4 text-accent">VIP SECTION</h1>
+            <p className="text-4xl font-light text-center lg:col-start-1 lg:col-span-4 lg:row-start-2 row-span-1 items-center lg:pt-24 text-accent">RSVP NOW</p>
 
-            <form action="" className=" grid  col-start-2 col-span-2 row-start-3 row-span-3 gap-6 pt-24 w-full h-auto">
+            <form action="" className=" grid  lg:col-start-2 lg:col-span-2 lg:row-start-3 row-span-3 gap-6 pb-24 lg:pb-0 lg:pt-24 w-full lg:h-auto h-[50vh] px-15 lg:px-0">
                 
                 <div className="grid gap-2 ">
                     <label htmlFor="name" className="text-accent">Name</label>
@@ -35,7 +35,7 @@ const Rsvp = () => {
 
             </form>
 
-            <div style={{ backgroundImage: `url(${FormImage})` }} className='w-full h-full bg-cover bg-center col-start-5 col-span-4 row-start-1 row-span-9'>
+            <div style={{ backgroundImage: `url(${FormImage})` }} className='w-full h-[75vh] aspect-4/3 lg:aspect-auto lg:h-full bg-cover bg-center lg:col-start-5 lg:col-span-4 lg:row-start-1 lg:row-span-9 row-span-4'>
 
             </div>
     </GridLayout>

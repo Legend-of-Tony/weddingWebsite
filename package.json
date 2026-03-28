@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "nodemon --watch server --ext ts --exec tsx server/server.ts",
+    "start:server": "tsx server/server.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
