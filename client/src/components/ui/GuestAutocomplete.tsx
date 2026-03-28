@@ -24,7 +24,7 @@ const GuestAutocomplete = ({ value, onChange }: GuestAutocompleteProps) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/guests/search?q=${encodeURIComponent(value)}`
+        `/guests/search?q=${encodeURIComponent(value)}`
       );
 
       const data = await res.json();
