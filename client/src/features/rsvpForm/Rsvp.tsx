@@ -139,7 +139,7 @@ const Rsvp = () => {
 
       <div
         style={{ backgroundImage: `url(${FormImage})` }}
-        className="order-2 min-h-[50vh] bg-cover bg-center lg:col-span-4 lg:min-h-screen"
+        className="order-2 min-h-[75vh] bg-cover bg-center lg:col-span-4 lg:min-h-screen"
       />
     </GridLayout>
   );
