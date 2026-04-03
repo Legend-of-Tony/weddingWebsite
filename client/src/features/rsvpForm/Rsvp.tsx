@@ -40,13 +40,13 @@ const Rsvp = () => {
 
   return (
     <GridLayout id="rsvp" className="w-full bg-secondary">
-      <div className="order-1 flex min-h-[50vh] flex-col justify-start px-6 py-12 text-accent lg:col-span-4 lg:min-h-screen lg:px-12 lg:py-20">
-        <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
-          <h1 className="pt-4 text-center text-6xl lg:text-left lg:text-7xl">
+      <div className="order-1 flex min-h-[50vh] flex-col justify-start px-6 py-12  lg:col-span-4 lg:min-h-screen lg:px-12 lg:py-20">
+        <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col ">
+          <h1 className="pt-4 text-center text-6xl lg:text-left lg:text-7xl text-accent">
             VIP SECTION
           </h1>
 
-          <p className="mt-3 text-center text-3xl font-light lg:text-left lg:text-4xl">
+          <p className="mt-3 text-center text-3xl font-light lg:text-left lg:text-4xl text-accent">
             RSVP NOW
           </p>
 
@@ -96,7 +96,7 @@ const Rsvp = () => {
                     inputMode="numeric"
                     value={partySize}
                     onChange={(e) => handlePartySizeChange(e.target.value)}
-                    className="rounded-xl bg-white px-4 py-2 outline-none"
+                    className="rounded-xl bg-white px-4 py-2 outline-none "
                   />
                 </div>
 
