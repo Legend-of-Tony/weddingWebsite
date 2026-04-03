@@ -2,7 +2,7 @@ import GridLayout from "../../components/layout/GridLayout"
 
 const Map = () => {
   return (
-    <GridLayout id='map' className='w-full bg-primary'>
+    <GridLayout id='map' className='w-full bg-primary lg:h-screen lg:grid-rows-9'>
         <div id='map-container' className='order-2 lg:order-1 lg:col-start-1 lg:col-span-4 lg:row-start-2 lg:row-span-7  '>
             <iframe  className=" w-full h-[50vh] lg:h-full border:0 shadow-xl" loading="lazy" allowFullScreen src="https://www.google.com/maps/embed/v1/place?q=place_id:EigxOTE1IFcgR3VhZGFsdXBlIFJkLCBNZXNhLCBBWiA4NTIwMiwgVVNBIjESLwoUChIJqfhITpcHK4cRiP13HDBPGGUQ-w4qFAoSCZc4mjopqCuHEaQRLxUItSYs&key=AIzaSyAR7XiEpmSnVko_4a9sP2XS-BmVsEBHvGo"></iframe> 
         </div>

@@ -1,47 +1,62 @@
-import { useEffect, useState } from 'react';
-
-type Guest = {
-  id: number;
-  name: string;
-};
+import { useEffect, useState } from "react";
+import type { Guest } from "../../features/rsvpForm/types";
 
 type GuestAutocompleteProps = {
   value: string;
   onChange: (value: string) => void;
+  onSelect: (guest: Guest) => void;
+  placeholder?: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL as string;
 
-const GuestAutocomplete = ({ value, onChange }: GuestAutocompleteProps) => {
-  const [matches, setMatches] = useState<Guest[]>([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+const GuestAutocomplete = ({
+  value,
+  onChange,
+  onSelect,
+  placeholder,
+}: GuestAutocompleteProps) => {
+  const [results, setResults] = useState<Guest[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const fetchGuests = async () => {
-      if (!value.trim()) {
-        setMatches([]);
-        setShowDropdown(false);
-        return;
-      }
-
-    try {
-      const res = await fetch(
-        `${API_URL}/guests/search?q=${encodeURIComponent(value)}`
-      );
-
-      const data = await res.json();
-
-      setMatches(data);
-      setShowDropdown(data.length > 0); // 👈 key line
-    } catch (error) {
-      console.error(error);
-      setMatches([]);
-      setShowDropdown(false);
+    if (!value.trim()) {
+      setResults([]);
+      return;
     }
-  };
 
-    const timeout = setTimeout(fetchGuests, 200);
-    return () => clearTimeout(timeout);
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/guests/search?q=${encodeURIComponent(value)}`,
+          { cache: "no-store" }
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to search guests.");
+        }
+
+        const data: Guest[] = await res.json();
+
+        if (!cancelled) {
+          setResults(data);
+        }
+      } catch (error) {
+        console.error(error);
+        if (!cancelled) {
+          setResults([]);
+        }
+      }
+    };
+
+    const timeout = setTimeout(run, 200);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [value]);
 
   return (
@@ -49,24 +64,29 @@ const GuestAutocomplete = ({ value, onChange }: GuestAutocompleteProps) => {
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => {
-          if (matches.length > 0) setShowDropdown(true);
-        }}
+        placeholder={placeholder}
         autoComplete="off"
-        className="bg-white rounded-xl px-4 w-full"
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => {
+          setTimeout(() => setOpen(false), 100);
+        }}
+        className="bg-white rounded-xl px-4 py-2 w-full outline-none"
       />
 
-      {showDropdown && matches.length > 0 && (
+      {open && results.length > 0 && value.trim() && (
         <ul className="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg max-h-60 overflow-y-auto">
-          {matches.map((guest) => (
+          {results.map((guest) => (
             <li
-                key={guest.id}
-                onClick={() => {
+              key={guest.id}
+              onMouseDown={() => {
                 onChange(guest.name);
-                setMatches([]);          // 👈 add this
-                setShowDropdown(false);  // 👈 keep this
-                }}
+                onSelect(guest);
+                setOpen(false);
+              }}
               className="px-4 py-2 cursor-pointer hover:bg-gray-100"
             >
               {guest.name}

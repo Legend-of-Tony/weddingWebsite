@@ -1,67 +1,177 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from "express";
 import db from "../database/db.ts";
 
-export const getAllGuests = async (req:Request,res:Response) => {
-    try {
-        const guests = await db.prepare('SELECT * FROM Guests').all();
-        res.status(200).json({success:true, data:guests });
-        console.log(guests);
-    }catch(error){
-        console.error(error);
+export const getAllGuests = (req: Request, res: Response) => {
+  try {
+    const guests = db.prepare(`
+      SELECT
+        Id AS id,
+        name,
+        has_plus_one,
+        is_coming,
+        updated_at
+      FROM Guests
+    `).all();
+
+    return res.status(200).json({
+      success: true,
+      data: guests,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch guests.",
+    });
+  }
+};
+
+export const getGuestById = (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const guest = db.prepare(`
+      SELECT
+        Id AS id,
+        name,
+        has_plus_one,
+        is_coming,
+        updated_at
+      FROM Guests
+      WHERE Id = ?
+    `).get(id);
+
+    if (!guest) {
+      return res.status(404).json({
+        success: false,
+        message: "Guest not found",
+      });
     }
-}
 
-export const getGuestById = async (req:Request,res:Response) => {
-    const {id} = req.params;
-    try {
-        const guest = await db.prepare('SELECT * FROM Guests WHERE id = ?').get(id);
-        if(guest){
-            res.status(200).json({success:true, data:guest });
-        } else {
-            res.status(404).json({message: 'Guest not found'});
-        }
-    }catch(error){
-        console.error(error);
+    return res.status(200).json({
+      success: true,
+      data: guest,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch guest.",
+    });
+  }
+};
+
+export const createGuest = (req: Request, res: Response) => {
+  const { name, has_plus_one = 0, is_coming = null } = req.body;
+
+  if (!name || !String(name).trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Guest name is required.",
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO Guests (name, has_plus_one, is_coming)
+      VALUES (?, ?, ?)
+    `).run(String(name).trim(), has_plus_one, is_coming);
+
+    const newGuest = db.prepare(`
+      SELECT
+        Id AS id,
+        name,
+        has_plus_one,
+        is_coming,
+        updated_at
+      FROM Guests
+      WHERE Id = ?
+    `).get(result.lastInsertRowid);
+
+    return res.status(201).json({
+      success: true,
+      data: newGuest,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create guest.",
+    });
+  }
+};
+
+export const updateGuest = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, has_plus_one, is_coming } = req.body;
+
+  if (!name || !String(name).trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Guest name is required.",
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      UPDATE Guests
+      SET name = ?, has_plus_one = ?, is_coming = ?
+      WHERE Id = ?
+    `).run(String(name).trim(), has_plus_one, is_coming, id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Guest not found",
+      });
     }
-}
 
-export const createGuest = async (req:Request,res:Response) => {
-    const {name} = req.body;
-    try {
-        const newGuest = await db.prepare('INSERT INTO Guests (name) VALUES (?)').run(name);
-        res.status(201).json({success:true, data:newGuest})
-    }catch(error){
-        console.error(error);
+    const updatedGuest = db.prepare(`
+      SELECT
+        Id AS id,
+        name,
+        has_plus_one,
+        is_coming,
+        updated_at
+      FROM Guests
+      WHERE Id = ?
+    `).get(id);
+
+    return res.status(200).json({
+      success: true,
+      data: updatedGuest,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update guest.",
+    });
+  }
+};
+
+export const deleteGuest = (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const result = db.prepare("DELETE FROM Guests WHERE Id = ?").run(id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Guest not found",
+      });
     }
-}
 
-export const updateGuest = async (req:Request,res:Response) => {
-    const {id} = req.params;
-    const {name,has_plus_one, is_coming } = req.body;
-
-    try {
-        const updatedGuest = await db.prepare('UPDATE Guests SET name = ?, has_plus_one = ?, is_coming = ? where id = ?').run(name, has_plus_one, is_coming, id);
-        if (updatedGuest.changes === 0){
-            res.status(404).json({message:'Guest not found'})
-        } else {
-            res.status(200).json({success:true, data:updatedGuest})
-        }
-    }catch(error){
-        console.error(error);
-    }
-}
-
-export const deleteGuest = async (req:Request, res:Response) => {
-    const {id} = req.params;
-
-    try {
-        const deletedGuest = await db.prepare('DELETE FROM Guests WHERE id = ?').run(id);
-        if (deletedGuest.changes === 0){
-            res.status(404).json({message:'Guest not found'})
-        } else {
-            res.status(200).json({success:true, data:deletedGuest})
-        }
-    }catch(error){
-        console.error(error);
-    }
-}
+    return res.status(200).json({
+      success: true,
+      message: "Guest deleted successfully.",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete guest.",
+    });
+  }
+};

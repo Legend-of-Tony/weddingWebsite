@@ -1,5 +1,15 @@
-import Database from 'better-sqlite3';
+import Database from "better-sqlite3";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const db = new Database('./database/wedding.db');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const dbPath = path.resolve(__dirname, "./wedding.db");
+const db = new Database(dbPath);
+
+db.pragma("foreign_keys = ON");
+
+console.log("Connected to SQLite database with better-sqlite3.");
 
 export default db;
