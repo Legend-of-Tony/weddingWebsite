@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -59,57 +59,68 @@ const AdminGuests = () => {
   const [draftName, setDraftName] = useState("");
   const [draftStatus, setDraftStatus] = useState<string>("pending");
   const [savingRowKey, setSavingRowKey] = useState<string | null>(null);
+  const [newGuestName, setNewGuestName] = useState("");
+  const [newGuestHasPlusOne, setNewGuestHasPlusOne] = useState(false);
+  const [isCreatingGuest, setIsCreatingGuest] = useState(false);
+  const [updatingPlusOneId, setUpdatingPlusOneId] = useState<number | null>(null);
+  const [deletingGuestId, setDeletingGuestId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const params = new URLSearchParams({
-      filter,
-      page: String(page),
-    });
+  const loadGuests = useCallback(
+    async (signal?: AbortSignal) => {
+      const params = new URLSearchParams({
+        filter,
+        page: String(page),
+      });
 
-    const trimmedSearch = search.trim();
+      const trimmedSearch = search.trim();
 
-    if (trimmedSearch) {
-      params.set("search", trimmedSearch);
-    }
+      if (trimmedSearch) {
+        params.set("search", trimmedSearch);
+      }
 
-    setLoading(true);
-    setError("");
+      setLoading(true);
+      setError("");
 
-    fetch(`${API_URL}/admin/guests?${params.toString()}`, {
-      credentials: "include",
-      signal: controller.signal,
-    })
-      .then(async (res) => {
+      try {
+        const res = await fetch(`${API_URL}/admin/guests?${params.toString()}`, {
+          credentials: "include",
+          signal,
+          cache: "no-store",
+        });
+
         const data = (await res.json()) as GuestApiResponse & { error?: string };
 
         if (!res.ok) {
           throw new Error(data.error || "Failed to load guests.");
         }
 
-        return data;
-      })
-      .then((data) => {
         setRows(data.rows);
         setTotal(data.total);
         setPage(data.page);
         setPageSize(data.pageSize);
-      })
-      .catch((err: Error) => {
-        if (err.name === "AbortError") {
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
           return;
         }
 
-        setError(err.message);
+        const message = err instanceof Error ? err.message : "Failed to load guests.";
+        setError(message);
         setRows([]);
         setTotal(0);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    },
+    [filter, page, search]
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    loadGuests(controller.signal);
 
     return () => controller.abort();
-  }, [filter, page, search]);
+  }, [loadGuests]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -173,7 +184,10 @@ const AdminGuests = () => {
         }),
       });
 
-      const data = (await res.json()) as { error?: string };
+      const data = (await res.json()) as {
+        error?: string;
+        guest?: GuestApiRow;
+      };
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to save changes.");
@@ -200,19 +214,211 @@ const AdminGuests = () => {
     }
   };
 
+  const handleCreateGuest = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const trimmedName = newGuestName.trim();
+
+    if (!trimmedName) {
+      setError("Guest name is required.");
+      return;
+    }
+
+    setIsCreatingGuest(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${API_URL}/admin/guests`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: trimmedName,
+          has_plus_one: newGuestHasPlusOne ? 1 : 0,
+        }),
+      });
+
+      const data = (await res.json()) as {
+        error?: string;
+        guest?: GuestApiRow;
+      };
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to create guest.");
+      }
+
+      setNewGuestName("");
+      setNewGuestHasPlusOne(false);
+
+      const createdGuest = data.guest;
+
+      if (page === 1 && filter === "all" && !search.trim() && createdGuest) {
+        setRows((currentRows) => [createdGuest, ...currentRows].slice(0, pageSize));
+        setTotal((currentTotal) => currentTotal + 1);
+      } else {
+        setPage(1);
+        setFilter("all");
+        setSearch("");
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to create guest.";
+      setError(message);
+    } finally {
+      setIsCreatingGuest(false);
+    }
+  };
+
+  const handlePlusOneToggle = async (row: GuestApiRow) => {
+    if (filter === "plus-ones") {
+      return;
+    }
+
+    setUpdatingPlusOneId(row.id);
+    setError("");
+
+    try {
+      const nextValue = row.has_plus_one ? 0 : 1;
+      const res = await fetch(`${API_URL}/admin/guests/${row.id}/plus-one`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          has_plus_one: nextValue,
+        }),
+      });
+
+      const data = (await res.json()) as { error?: string };
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update plus-one access.");
+      }
+
+      if (filter === "with-plus-ones" && nextValue === 0) {
+        setRows((currentRows) => currentRows.filter((currentRow) => currentRow.id !== row.id));
+        setTotal((currentTotal) => Math.max(0, currentTotal - 1));
+        return;
+      }
+
+      setRows((currentRows) =>
+        currentRows.map((currentRow) =>
+          currentRow.id === row.id
+            ? {
+                ...currentRow,
+                has_plus_one: nextValue,
+              }
+            : currentRow
+        )
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to update plus-one access.";
+      setError(message);
+    } finally {
+      setUpdatingPlusOneId(null);
+    }
+  };
+
+  const handleDeleteGuest = async (row: GuestApiRow) => {
+    if (filter === "plus-ones") {
+      return;
+    }
+
+    const confirmed = window.confirm(`Delete ${row.name} from the guest list?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingGuestId(row.id);
+    setError("");
+
+    try {
+      const res = await fetch(`${API_URL}/admin/guests/${row.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = (await res.json()) as { error?: string };
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete guest.");
+      }
+
+      setRows((currentRows) => currentRows.filter((currentRow) => currentRow.id !== row.id));
+      setTotal((currentTotal) => Math.max(0, currentTotal - 1));
+
+      if (editingRowKey === getRowKey(filter, row.id)) {
+        cancelEditing();
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to delete guest.";
+      setError(message);
+    } finally {
+      setDeletingGuestId(null);
+    }
+  };
+
   const tableLabel = filter === "plus-ones" ? "Plus Ones" : "Guests";
 
   return (
     <div className="min-h-screen bg-stone-100 px-4 py-10 text-primary sm:px-8">
       <div className="mx-auto max-w-6xl rounded-[2rem] border border-black/10 bg-white p-6 shadow-[0_24px_80px_rgba(0,0,0,0.08)] sm:p-8">
-        <div className="mb-8 flex flex-col gap-5">
+        <div className="mb-8 flex flex-col gap-6">
           <div>
             <h1 className="mb-2 text-4xl text-secondary sm:text-5xl">Guest Dashboard</h1>
             <p className="font-sans text-sm text-primary/70 sm:text-base">
-              Search your list, filter by RSVP activity, and browse guests 15 at a
-              time.
+              Search your list, filter by RSVP activity, create new guests, and
+              manage plus-one access in one place.
             </p>
           </div>
+
+          <form
+            onSubmit={handleCreateGuest}
+            className="rounded-[1.5rem] border border-black/10 bg-stone-50 p-5"
+          >
+            <div className="mb-3">
+              <h2 className="text-2xl text-secondary">Add Guest</h2>
+              <p className="font-sans text-sm text-primary/65">
+                Create a new guest and decide whether they can bring a plus one.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+              <label className="flex-1">
+                <span className="mb-2 block font-sans text-sm font-medium uppercase tracking-[0.2em] text-primary/60">
+                  Guest name
+                </span>
+                <input
+                  type="text"
+                  value={newGuestName}
+                  onChange={(e) => setNewGuestName(e.target.value)}
+                  placeholder="Add a guest name"
+                  className="w-full rounded-full border border-black/15 bg-white px-5 py-3 font-sans text-base outline-none transition focus:border-secondary"
+                />
+              </label>
+
+              <label className="flex items-center gap-3 rounded-full border border-black/15 bg-white px-5 py-3 font-sans text-sm text-primary lg:min-w-56">
+                <input
+                  type="checkbox"
+                  checked={newGuestHasPlusOne}
+                  onChange={(e) => setNewGuestHasPlusOne(e.target.checked)}
+                  className="h-4 w-4 accent-secondary"
+                />
+                Allow plus one
+              </label>
+
+              <button
+                type="submit"
+                disabled={isCreatingGuest}
+                className="rounded-full bg-secondary px-6 py-3 font-sans text-sm font-medium uppercase tracking-[0.18em] text-white transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isCreatingGuest ? "Adding..." : "Add guest"}
+              </button>
+            </div>
+          </form>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <label className="flex-1">
@@ -311,7 +517,10 @@ const AdminGuests = () => {
                               <button
                                 type="button"
                                 onClick={() => handleSave(row)}
-                                disabled={savingRowKey === getRowKey(filter, row.id)}
+                                disabled={
+                                  savingRowKey === getRowKey(filter, row.id) ||
+                                  deletingGuestId === row.id
+                                }
                                 className="rounded-full bg-secondary px-4 py-2 font-sans text-sm text-white transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 {savingRowKey === getRowKey(filter, row.id) ? "Saving..." : "Save"}
@@ -319,11 +528,27 @@ const AdminGuests = () => {
                               <button
                                 type="button"
                                 onClick={cancelEditing}
-                                disabled={savingRowKey === getRowKey(filter, row.id)}
+                                disabled={
+                                  savingRowKey === getRowKey(filter, row.id) ||
+                                  deletingGuestId === row.id
+                                }
                                 className="rounded-full border border-black/15 px-4 py-2 font-sans text-sm text-primary transition hover:border-primary"
                               >
                                 Cancel
                               </button>
+                              {filter !== "plus-ones" ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteGuest(row)}
+                                  disabled={
+                                    savingRowKey === getRowKey(filter, row.id) ||
+                                    deletingGuestId === row.id
+                                  }
+                                  className="rounded-full border border-red-300 px-4 py-2 font-sans text-sm text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                  {deletingGuestId === row.id ? "Deleting..." : "Delete"}
+                                </button>
+                              ) : null}
                             </div>
                           </div>
                         ) : (
@@ -336,13 +561,41 @@ const AdminGuests = () => {
                                 Linked to {row.primary_guest_name}
                               </div>
                             ) : null}
-                            <button
-                              type="button"
-                              onClick={() => startEditing(row)}
-                              className="rounded-full border border-black/15 px-3 py-1 font-sans text-xs uppercase tracking-[0.18em] text-primary transition hover:border-secondary hover:text-secondary"
-                            >
-                              Edit
-                            </button>
+                            {filter !== "plus-ones" ? (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handlePlusOneToggle(row)}
+                                  disabled={updatingPlusOneId === row.id}
+                                  className={`rounded-full px-3 py-1 font-sans text-xs uppercase tracking-[0.18em] transition ${
+                                    row.has_plus_one
+                                      ? "bg-accent text-primary"
+                                      : "border border-black/15 text-primary hover:border-secondary hover:text-secondary"
+                                  } disabled:cursor-not-allowed disabled:opacity-60`}
+                                >
+                                  {updatingPlusOneId === row.id
+                                    ? "Saving..."
+                                    : row.has_plus_one
+                                      ? "Has plus one"
+                                      : "No plus one"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => startEditing(row)}
+                                  className="rounded-full border border-black/15 px-3 py-1 font-sans text-xs uppercase tracking-[0.18em] text-primary transition hover:border-secondary hover:text-secondary"
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => startEditing(row)}
+                                className="rounded-full border border-black/15 px-3 py-1 font-sans text-xs uppercase tracking-[0.18em] text-primary transition hover:border-secondary hover:text-secondary"
+                              >
+                                Edit
+                              </button>
+                            )}
                           </div>
                         )}
                       </td>

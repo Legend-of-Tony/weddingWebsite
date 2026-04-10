@@ -186,6 +186,26 @@ export const updateAdminPlusOne = (req: Request, res: Response) => {
   }
 };
 
+export const deleteAdminGuest = (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const result = db.prepare(`
+      DELETE FROM Guests
+      WHERE Id = ?
+    `).run(id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Guest not found." });
+    }
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to delete guest." });
+  }
+};
+
 export const updateGuestPlusOneAccess = (req: Request, res: Response) => {
   const { id } = req.params;
   const { has_plus_one } = req.body as { has_plus_one?: number };
