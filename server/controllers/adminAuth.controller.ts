@@ -28,7 +28,14 @@ export const loginAdmin = async (req: Request, res: Response) => {
 
   req.session.isAdmin = true;
 
-  return res.status(200).json({ success: true });
+  return req.session.save((error) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Failed to save admin session." });
+    }
+
+    return res.status(200).json({ success: true });
+  });
 };
 
 export const logoutAdmin = (req: Request, res: Response) => {
@@ -39,6 +46,8 @@ export const logoutAdmin = (req: Request, res: Response) => {
 };
 
 export const getAdminSession = (req: Request, res: Response) => {
+  res.setHeader("Cache-Control", "no-store");
+
   return res.status(200).json({
     authenticated: !!req.session.isAdmin,
   });

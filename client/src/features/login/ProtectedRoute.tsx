@@ -10,6 +10,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     fetch(`${API_URL}/admin/session`, {
       credentials: "include",
+      cache: "no-store",
     })
       .then((res) => res.json())
       .then((data) => {

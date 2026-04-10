@@ -12,6 +12,11 @@ import adminAuthRoutes from "../routes/adminAuth.routes.ts";
 import adminGuestRoutes from "../routes/adminGuests.routes.ts";
 
 const app = express();
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 
 app.use(express.json());
 
@@ -29,12 +34,13 @@ app.use(
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "change-me",
+    proxy: isProduction,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 4,
     },
   })
