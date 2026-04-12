@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import type { Guest } from "./types";
-
-const API_URL = import.meta.env.VITE_API_URL as string;
+import { API_URL } from "../../config/api";
 
 export const useRsvpForm = () => {
   const [guestName, setGuestName] = useState("");

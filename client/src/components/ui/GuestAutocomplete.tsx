@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Guest } from "../../features/rsvpForm/types";
+import { API_URL } from "../../config/api";
 
 type GuestAutocompleteProps = {
   value: string;
@@ -7,8 +8,6 @@ type GuestAutocompleteProps = {
   onSelect: (guest: Guest) => void;
   placeholder?: string;
 };
-
-const API_URL = import.meta.env.VITE_API_URL as string;
 
 const GuestAutocomplete = ({
   value,
