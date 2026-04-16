@@ -56,6 +56,7 @@ const Rsvp = () => {
                 Name
               </label>
               <GuestAutocomplete
+                id="guestName"
                 value={guestName}
                 onChange={handleGuestNameChange}
                 onSelect={handleGuestSelect}

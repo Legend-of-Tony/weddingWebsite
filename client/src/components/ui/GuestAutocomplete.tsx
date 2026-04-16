@@ -3,6 +3,7 @@ import type { Guest } from "../../features/rsvpForm/types";
 import { API_URL } from "../../config/api";
 
 type GuestAutocompleteProps = {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   onSelect: (guest: Guest) => void;
@@ -10,6 +11,7 @@ type GuestAutocompleteProps = {
 };
 
 const GuestAutocomplete = ({
+  id,
   value,
   onChange,
   onSelect,
@@ -59,12 +61,17 @@ const GuestAutocomplete = ({
   }, [value]);
 
   return (
-    <div className="relative">
+    <div className="relative z-20">
       <input
+        id={id}
+        name={id}
         type="text"
         value={value}
         placeholder={placeholder}
         autoComplete="off"
+        autoCapitalize="words"
+        autoCorrect="off"
+        spellCheck={false}
         onChange={(e) => {
           onChange(e.target.value);
           setOpen(true);
@@ -73,15 +80,16 @@ const GuestAutocomplete = ({
         onBlur={() => {
           setTimeout(() => setOpen(false), 100);
         }}
-        className="bg-white rounded-xl px-4 py-2 w-full outline-none"
+        className="relative z-20 w-full touch-manipulation rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
       />
 
       {open && results.length > 0 && value.trim() && (
-        <ul className="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg max-h-60 overflow-y-auto">
+        <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl bg-white shadow-lg">
           {results.map((guest) => (
             <li
               key={guest.id}
-              onMouseDown={() => {
+              onPointerDown={(e) => {
+                e.preventDefault();
                 onChange(guest.name);
                 onSelect(guest);
                 setOpen(false);
