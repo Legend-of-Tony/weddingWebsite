@@ -29,7 +29,7 @@ const Map = () => {
         <hr />
         <ul className=" font-extralight lg:font-light list-disc">
           <li>Saturday, October 24th</li>
-          <li>4PM - 12AM</li>
+          <li>4:30PM - 12AM</li>
           <li>Black Tie Event</li>
           <li>Contact Lucas with any questions: (602) 573-5553</li>
         </ul>
