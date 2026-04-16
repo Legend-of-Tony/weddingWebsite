@@ -5,11 +5,15 @@ type RSVPButtonProps = {
 
 const RSVPButton = ({ value, onChange }: RSVPButtonProps) => {
   return (
-    <div className="flex rounded-full overflow-hidden bg-white w-fit">
+    <div id="attending" className="relative z-30 flex w-fit touch-manipulation overflow-hidden rounded-full bg-white">
       <button
         type="button"
         onClick={() => onChange("yes")}
-        className={`px-8 py-2 font-semibold ${
+        onPointerDown={(e) => {
+          e.preventDefault();
+          onChange("yes");
+        }}
+        className={`touch-manipulation px-8 py-3 font-semibold ${
           value === "yes" ? "bg-neutral-700 text-white" : "bg-white text-black"
         }`}
       >
@@ -19,7 +23,11 @@ const RSVPButton = ({ value, onChange }: RSVPButtonProps) => {
       <button
         type="button"
         onClick={() => onChange("no")}
-        className={`px-8 py-2 font-semibold ${
+        onPointerDown={(e) => {
+          e.preventDefault();
+          onChange("no");
+        }}
+        className={`touch-manipulation px-8 py-3 font-semibold ${
           value === "no" ? "bg-neutral-700 text-white" : "bg-white text-black"
         }`}
       >

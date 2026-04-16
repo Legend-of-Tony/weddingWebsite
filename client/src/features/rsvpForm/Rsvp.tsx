@@ -40,8 +40,8 @@ const Rsvp = () => {
 
   return (
     <GridLayout id="rsvp" className="w-full bg-secondary">
-      <div className="order-1 flex min-h-[50vh] flex-col justify-start px-6 py-12  lg:col-span-4 lg:min-h-screen lg:px-12 lg:py-20">
-        <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col ">
+      <div className="relative z-20 order-1 flex min-h-[50vh] flex-col justify-start px-6 py-12 lg:col-span-4 lg:min-h-screen lg:px-12 lg:py-20">
+        <div className="relative z-20 mx-auto flex w-full max-w-2xl flex-1 flex-col">
           <h1 className="pt-4 text-center text-6xl lg:text-left lg:text-7xl text-accent">
             VIP SECTION
           </h1>
@@ -50,7 +50,7 @@ const Rsvp = () => {
             RSVP NOW
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-10 grid w-full gap-6 pb-8">
+          <form onSubmit={handleSubmit} className="relative z-30 mt-10 grid w-full gap-6 pb-8">
             <div className="grid gap-2">
               <label htmlFor="guestName" className="text-accent">
                 Name
@@ -130,7 +130,7 @@ const Rsvp = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded bg-primary px-4 py-2 font-bold text-white hover:bg-accent hover:text-primary disabled:opacity-60"
+              className="relative z-30 touch-manipulation rounded bg-primary px-4 py-3 font-bold text-white hover:bg-accent hover:text-primary disabled:opacity-60"
             >
               {isSubmitting ? "Submitting..." : "Submit"}
             </button>
@@ -140,7 +140,7 @@ const Rsvp = () => {
 
       <div
         style={{ backgroundImage: `url(${FormImage})` }}
-        className="order-2 min-h-[75vh] bg-cover bg-center lg:col-span-4 lg:min-h-screen"
+        className="pointer-events-none order-2 min-h-[75vh] bg-cover bg-center lg:col-span-4 lg:min-h-screen"
       />
     </GridLayout>
   );
