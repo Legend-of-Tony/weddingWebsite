@@ -1,5 +1,5 @@
 import GridLayout from "../../components/layout/GridLayout";
-import FormImage from "../../assets/formImage.jpeg";
+import FormImage from "../../assets/formImage.webp";
 import RSVPButton from "../../components/ui/RSVPButton";
 import GuestAutocomplete from "../../components/ui/GuestAutocomplete";
 import { useRsvpForm } from "./useRsvpForm.ts";
@@ -27,7 +27,9 @@ const Rsvp = () => {
       <GridLayout id="rsvp" className="w-full bg-secondary">
         <div className="order-1 flex min-h-[50vh] flex-col items-center justify-center px-6 py-16 text-center text-accent lg:col-span-4 lg:min-h-screen lg:px-12">
           <h1 className="mb-6 text-5xl lg:text-6xl">Thank You</h1>
-          <p className="max-w-lg text-2xl">Your RSVP has been submitted successfully.</p>
+          <p className="max-w-lg text-2xl">
+            Your RSVP has been submitted successfully.
+          </p>
         </div>
 
         <div
@@ -50,7 +52,10 @@ const Rsvp = () => {
             RSVP NOW
           </p>
 
-          <form onSubmit={handleSubmit} className="relative z-30 mt-10 grid w-full gap-6 pb-8">
+          <form
+            onSubmit={handleSubmit}
+            className="relative z-30 mt-10 grid w-full gap-6 pb-8"
+          >
             <div className="grid gap-2">
               <label htmlFor="guestName" className="text-accent">
                 Name
@@ -104,7 +109,9 @@ const Rsvp = () => {
                 {additionalGuestNames.length > 0 &&
                   additionalGuestNames.map((value, index) => (
                     <div className="grid gap-2" key={`extra-guest-${index}`}>
-                      <label className="text-accent">Guest {index + 2} Name</label>
+                      <label className="text-accent">
+                        Guest {index + 2} Name
+                      </label>
                       <input
                         type="text"
                         value={value}

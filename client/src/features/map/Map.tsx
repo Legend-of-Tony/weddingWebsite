@@ -1,4 +1,5 @@
 import GridLayout from "../../components/layout/GridLayout";
+import attireExample from "../../assets/attire_example.jpeg";
 
 const Map = () => {
   return (
@@ -30,9 +31,18 @@ const Map = () => {
         <ul className=" font-extralight lg:font-light list-disc">
           <li>Saturday, October 24th</li>
           <li>4:30PM - 12AM</li>
-          <li>Black Tie Event</li>
-          <li>Contact Lucas with any questions: (602) 573-5553</li>
+          <li>
+            All black cocktail attire
+            <img
+              src={attireExample}
+              alt="All black cocktail attire example"
+              className="my-5 block w-full max-w-36 rounded-lg object-cover shadow-lg"
+            />
+          </li>
         </ul>
+        <h3 className="mt-auto text-l font-light lg:text-xl lg:mt-5">
+          Contact Lucas with any questions: (602) 573-5553
+        </h3>
       </div>
     </GridLayout>
   );

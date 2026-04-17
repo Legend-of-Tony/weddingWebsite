@@ -1,9 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 
-import Navbar from '../components/layout/Navbar';
-import Hero from '../features/hero/Hero';
-import Map from '../features/map/Map';
-import Rsvp from '../features/rsvpForm/Rsvp';
+import Navbar from "../components/layout/Navbar";
+import Hero from "../features/hero/Hero";
+import Map from "../features/map/Map";
+import Rsvp from "../features/rsvpForm/Rsvp";
+//import Donation from "../features/donation/Donation";
 
 // NEW pages
 import AdminLogin from "../features/login/AdminLogin";
@@ -16,6 +17,7 @@ const HomePage = () => {
       <Navbar />
       <Hero />
       <Map />
+
       <Rsvp />
     </>
   );
@@ -24,7 +26,6 @@ const HomePage = () => {
 const App = () => {
   return (
     <Routes>
-
       {/* MAIN WEBSITE */}
       <Route path="/" element={<HomePage />} />
 
@@ -40,9 +41,9 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
     </Routes>
   );
 };
 
 export default App;
+
