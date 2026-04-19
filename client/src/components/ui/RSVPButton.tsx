@@ -5,35 +5,44 @@ type RSVPButtonProps = {
 
 const RSVPButton = ({ value, onChange }: RSVPButtonProps) => {
   return (
-    <div id="attending" className="relative z-30 flex w-fit touch-manipulation overflow-hidden rounded-full bg-white">
-      <button
-        type="button"
-        onClick={() => onChange("yes")}
-        onPointerDown={(e) => {
-          e.preventDefault();
-          onChange("yes");
-        }}
-        className={`touch-manipulation px-8 py-3 font-semibold ${
+    <fieldset
+      id="attending"
+      className="relative z-30 flex w-fit touch-manipulation overflow-hidden rounded-full bg-white"
+    >
+      <legend className="sr-only">Will you be attending?</legend>
+
+      <label
+        className={`flex min-h-11 cursor-pointer touch-manipulation items-center px-8 py-3 font-semibold ${
           value === "yes" ? "bg-neutral-700 text-white" : "bg-white text-black"
         }`}
       >
-        YES
-      </button>
+        <input
+          type="radio"
+          name="attendance"
+          value="yes"
+          checked={value === "yes"}
+          onChange={() => onChange("yes")}
+          className="sr-only"
+        />
+        <span>YES</span>
+      </label>
 
-      <button
-        type="button"
-        onClick={() => onChange("no")}
-        onPointerDown={(e) => {
-          e.preventDefault();
-          onChange("no");
-        }}
-        className={`touch-manipulation px-8 py-3 font-semibold ${
+      <label
+        className={`flex min-h-11 cursor-pointer touch-manipulation items-center px-8 py-3 font-semibold ${
           value === "no" ? "bg-neutral-700 text-white" : "bg-white text-black"
         }`}
       >
-        NO
-      </button>
-    </div>
+        <input
+          type="radio"
+          name="attendance"
+          value="no"
+          checked={value === "no"}
+          onChange={() => onChange("no")}
+          className="sr-only"
+        />
+        <span>NO</span>
+      </label>
+    </fieldset>
   );
 };
 

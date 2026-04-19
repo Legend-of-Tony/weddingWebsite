@@ -61,14 +61,14 @@ const GuestAutocomplete = ({
   }, [value]);
 
   return (
-    <div className="relative z-20">
+    <div className="relative z-[100]">
       <input
         id={id}
         name={id}
         type="text"
         value={value}
         placeholder={placeholder}
-        autoComplete="off"
+        autoComplete="name"
         autoCapitalize="words"
         autoCorrect="off"
         spellCheck={false}
@@ -80,11 +80,11 @@ const GuestAutocomplete = ({
         onBlur={() => {
           setTimeout(() => setOpen(false), 100);
         }}
-        className="relative z-20 w-full touch-manipulation rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
+        className="relative z-[100] w-full touch-manipulation rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
       />
 
       {open && results.length > 0 && value.trim() && (
-        <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl bg-white shadow-lg">
+        <ul className="absolute z-[110] mt-1 max-h-72 w-full overflow-y-auto rounded-xl bg-white shadow-2xl">
           {results.map((guest) => (
             <li
               key={guest.id}
@@ -94,7 +94,7 @@ const GuestAutocomplete = ({
                 onSelect(guest);
                 setOpen(false);
               }}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-primary"
+              className="min-h-11 cursor-pointer px-4 py-3 text-primary hover:bg-gray-100"
             >
               {guest.name}
             </li>

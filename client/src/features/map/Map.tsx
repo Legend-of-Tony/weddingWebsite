@@ -9,10 +9,10 @@ const Map = () => {
     >
       <div
         id="map-container"
-        className="order-2 lg:order-1 lg:col-start-1 lg:col-span-4 lg:row-start-2 lg:row-span-7  "
+        className="order-2 lg:order-1 lg:col-start-1 lg:col-span-4 lg:row-start-2 lg:row-span-7"
       >
         <iframe
-          className=" w-full h-[50vh] lg:h-full border:0 shadow-xl"
+          className="h-[50vh] w-full border:0 shadow-xl lg:h-full"
           loading="lazy"
           allowFullScreen
           src="https://www.google.com/maps/embed/v1/place?q=place_id:EigxOTE1IFcgR3VhZGFsdXBlIFJkLCBNZXNhLCBBWiA4NTIwMiwgVVNBIjESLwoUChIJqfhITpcHK4cRiP13HDBPGGUQ-w4qFAoSCZc4mjopqCuHEaQRLxUItSYs&key=AIzaSyAR7XiEpmSnVko_4a9sP2XS-BmVsEBHvGo"
@@ -20,7 +20,7 @@ const Map = () => {
       </div>
       <div
         id="details-container"
-        className=" order-1 lg:order-2 lg:col-start-5 lg:col-span-3 lg:row-start-2 lg:row-span-7 text-white lg:px-4 px-8 lg:pt-0 pt-10  flex flex-col gap-4 h-[50vh]"
+        className="order-1 flex min-h-[50vh] flex-col gap-4 px-8 py-10 text-white lg:order-2 lg:col-start-5 lg:col-span-3 lg:row-start-2 lg:row-span-7 lg:h-full lg:px-4 lg:py-0"
       >
         <h2 className="text-5xl lg:text-7xl font-bold">COME AND JOIN US</h2>
         <hr />
@@ -36,11 +36,11 @@ const Map = () => {
             <img
               src={attireExample}
               alt="All black cocktail attire example"
-              className="my-5 block w-full max-w-36 rounded-lg object-cover shadow-lg"
+              className="my-2 block w-full max-w-28 rounded-lg object-cover shadow-lg lg:max-w-36"
             />
           </li>
         </ul>
-        <h3 className="mt-auto text-l font-light lg:text-xl lg:mt-5">
+        <h3 className="mt-6 text-lg font-light lg:mt-auto lg:text-xl">
           Contact Lucas with any questions: (602) 573-5553
         </h3>
       </div>

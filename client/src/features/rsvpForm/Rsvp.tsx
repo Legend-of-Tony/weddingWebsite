@@ -54,7 +54,7 @@ const Rsvp = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="relative z-30 mt-10 grid w-full gap-6 pb-8"
+            className="relative z-30 mt-10 grid w-full gap-6 pb-20"
           >
             <div className="grid gap-2">
               <label htmlFor="guestName" className="text-accent">
@@ -82,10 +82,13 @@ const Rsvp = () => {
                   id="plusOneName"
                   type="text"
                   value={additionalGuestNames[0] ?? ""}
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  autoCorrect="off"
                   onChange={(e) =>
                     handleAdditionalGuestNameChange(0, e.target.value)
                   }
-                  className="rounded-xl bg-white px-4 py-2 outline-none"
+                  className="min-h-11 rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
                 />
               </div>
             )}
@@ -100,9 +103,10 @@ const Rsvp = () => {
                     id="partySize"
                     type="text"
                     inputMode="numeric"
+                    autoComplete="off"
                     value={partySize}
                     onChange={(e) => handlePartySizeChange(e.target.value)}
-                    className="rounded-xl bg-white px-4 py-2 outline-none "
+                    className="min-h-11 rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
                   />
                 </div>
 
@@ -115,10 +119,13 @@ const Rsvp = () => {
                       <input
                         type="text"
                         value={value}
+                        autoComplete="name"
+                        autoCapitalize="words"
+                        autoCorrect="off"
                         onChange={(e) =>
                           handleAdditionalGuestNameChange(index, e.target.value)
                         }
-                        className="rounded-xl bg-white px-4 py-2 outline-none"
+                        className="min-h-11 rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
                       />
                     </div>
                   ))}
@@ -137,7 +144,7 @@ const Rsvp = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="relative z-30 touch-manipulation rounded bg-primary px-4 py-3 font-bold text-white hover:bg-accent hover:text-primary disabled:opacity-60"
+              className="min-h-11 touch-manipulation rounded bg-primary px-4 py-3 text-base font-bold text-white hover:bg-accent hover:text-primary disabled:opacity-60"
             >
               {isSubmitting ? "Submitting..." : "Submit"}
             </button>

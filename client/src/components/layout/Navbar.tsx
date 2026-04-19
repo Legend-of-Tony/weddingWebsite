@@ -12,12 +12,12 @@ const Navbar = () => {
         </div>
         <ul className=' col-start-9 col-span-1 row-start-8 row-span-1 flex flex-col items-end'>
             <li ><a href="#map">
-                <button className=' btn-primary '>DETAILS</button>
+                <button className='btn-primary text-2xl font-semibold lg:text-4xl lg:font-extralight'>DETAILS</button>
                 <hr className='text-white  w-full'/>
             </a></li>
             {/* <li><a href="#donate">Donate</a></li> */}
             <li><a href="#rsvp">
-                    <button className=' btn-primary '>RSVP</button>
+                    <button className='btn-primary text-2xl font-semibold lg:text-4xl lg:font-extralight'>RSVP</button>
                     <hr className='text-white  w-full'/>
             </a></li>
         </ul>
