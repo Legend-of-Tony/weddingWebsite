@@ -31,6 +31,8 @@ const Map = () => {
         <ul className=" font-extralight lg:font-light list-disc">
           <li>Saturday, October 24th</li>
           <li>4:30PM - 12AM</li>
+          <li>No plus ones unless already discussed</li>
+          <li>NO CHILDREN besides immediate family</li>
           <li>
             All black cocktail attire
             <img
