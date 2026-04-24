@@ -4,7 +4,7 @@ import Navbar from "../components/layout/Navbar";
 import Hero from "../features/hero/Hero";
 import Map from "../features/map/Map";
 import Rsvp from "../features/rsvpForm/Rsvp";
-//import Donation from "../features/donation/Donation";
+import Donation from "../features/donation/Donation";
 
 // NEW pages
 import AdminLogin from "../features/login/AdminLogin";
@@ -17,7 +17,7 @@ const HomePage = () => {
       <Navbar />
       <Hero />
       <Map />
-
+      <Donation />
       <Rsvp />
     </>
   );
