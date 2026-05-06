@@ -6,7 +6,7 @@ type GuestAutocompleteProps = {
   id?: string;
   value: string;
   onChange: (value: string) => void;
-  onSelect: (guest: Guest) => void;
+  onSelect?: (guest: Guest) => void;
   placeholder?: string;
 };
 
@@ -91,7 +91,7 @@ const GuestAutocomplete = ({
               onPointerDown={(e) => {
                 e.preventDefault();
                 onChange(guest.name);
-                onSelect(guest);
+                onSelect?.(guest);
                 setOpen(false);
               }}
               className="min-h-11 cursor-pointer px-4 py-3 text-primary hover:bg-gray-100"

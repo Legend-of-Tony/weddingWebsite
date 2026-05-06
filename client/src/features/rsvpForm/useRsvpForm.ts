@@ -8,6 +8,9 @@ export const useRsvpForm = () => {
 
   const [partySize, setPartySize] = useState("1");
   const [additionalGuestNames, setAdditionalGuestNames] = useState<string[]>([]);
+  const [additionalGuestSelections, setAdditionalGuestSelections] = useState<
+    Array<Guest | null>
+  >([]);
 
   const [attendance, setAttendance] = useState<"yes" | "no" | null>(null);
 
@@ -18,6 +21,7 @@ export const useRsvpForm = () => {
   const clearDependentFields = useCallback(() => {
     setPartySize("1");
     setAdditionalGuestNames([]);
+    setAdditionalGuestSelections([]);
     setAttendance(null);
     setError("");
   }, []);
@@ -45,9 +49,11 @@ export const useRsvpForm = () => {
     if (guest.has_plus_one === 1) {
       setPartySize("2");
       setAdditionalGuestNames([""]);
+      setAdditionalGuestSelections([null]);
     } else {
       setPartySize("1");
       setAdditionalGuestNames([]);
+      setAdditionalGuestSelections([]);
     }
   }, []);
 
@@ -55,6 +61,7 @@ export const useRsvpForm = () => {
     if (value === "") {
       setPartySize("");
       setAdditionalGuestNames([]);
+      setAdditionalGuestSelections([]);
       return;
     }
 
@@ -78,6 +85,20 @@ export const useRsvpForm = () => {
 
       return next;
     });
+
+    setAdditionalGuestSelections((prev) => {
+      const next = [...prev];
+
+      if (next.length > extraCount) {
+        return next.slice(0, extraCount);
+      }
+
+      while (next.length < extraCount) {
+        next.push(null);
+      }
+
+      return next;
+    });
   }, []);
 
   const handleAdditionalGuestNameChange = useCallback(
@@ -85,9 +106,29 @@ export const useRsvpForm = () => {
       setAdditionalGuestNames((prev) =>
         prev.map((name, i) => (i === index ? value : name))
       );
+      setAdditionalGuestSelections((prev) =>
+        prev.map((guest, i) => {
+          if (i !== index) return guest;
+
+          if (!guest) return null;
+
+          return guest.name.trim().toLowerCase() === value.trim().toLowerCase()
+            ? guest
+            : null;
+        })
+      );
     },
     []
   );
+
+  const handleAdditionalGuestSelect = useCallback((index: number, guest: Guest) => {
+    setAdditionalGuestNames((prev) =>
+      prev.map((name, i) => (i === index ? guest.name : name))
+    );
+    setAdditionalGuestSelections((prev) =>
+      prev.map((selected, i) => (i === index ? guest : selected))
+    );
+  }, []);
 
   const findExactGuestByName = useCallback(async (name: string) => {
     const trimmed = name.trim();
@@ -112,7 +153,7 @@ export const useRsvpForm = () => {
   }, []);
 
   const validate = useCallback(
-    (guest: Guest | null) => {
+    (guest: Guest | null, resolvedAdditionalGuests: Array<Guest | null>) => {
       if (!guest?.id) {
         return "Please select a valid guest from the list.";
       }
@@ -138,6 +179,17 @@ export const useRsvpForm = () => {
 
       if (trimmedExtraNames.some((name) => !name)) {
         return "Please complete all guest names.";
+      }
+
+      const seenGuestIds = new Set<number>([guest.id]);
+      for (const matchedGuest of resolvedAdditionalGuests) {
+        if (!matchedGuest) continue;
+
+        if (seenGuestIds.has(matchedGuest.id)) {
+          return "Duplicate guest names are not allowed.";
+        }
+
+        seenGuestIds.add(matchedGuest.id);
       }
 
       const normalized = [guest.name, ...trimmedExtraNames].map((name) =>
@@ -175,7 +227,31 @@ export const useRsvpForm = () => {
           setGuestName(guestForSubmit.name);
         }
 
-        const validationError = validate(guestForSubmit);
+        const resolvedAdditionalGuests = await Promise.all(
+          additionalGuestNames.map(async (name, index) => {
+            const trimmedName = name.trim();
+            const selectedAdditionalGuest = additionalGuestSelections[index];
+
+            if (!trimmedName) {
+              return null;
+            }
+
+            if (
+              selectedAdditionalGuest &&
+              selectedAdditionalGuest.name.trim().toLowerCase() ===
+                trimmedName.toLowerCase()
+            ) {
+              return selectedAdditionalGuest;
+            }
+
+            return findExactGuestByName(trimmedName);
+          })
+        );
+
+        const validationError = validate(
+          guestForSubmit,
+          resolvedAdditionalGuests
+        );
         if (validationError) {
           setError(validationError);
           return;
@@ -193,12 +269,11 @@ export const useRsvpForm = () => {
           additionalGuests:
             attendance === "yes"
               ? additionalGuestNames
-                  .map((name) => name.trim())
-                  .filter(Boolean)
-                  .map((name) => ({
-                    id: null,
-                    name,
+                  .map((name, index) => ({
+                    id: resolvedAdditionalGuests[index]?.id ?? null,
+                    name: name.trim(),
                   }))
+                  .filter((guest) => guest.name)
               : [],
         };
 
@@ -236,6 +311,7 @@ export const useRsvpForm = () => {
     },
     [
       additionalGuestNames,
+      additionalGuestSelections,
       attendance,
       findExactGuestByName,
       guestName,
@@ -251,6 +327,7 @@ export const useRsvpForm = () => {
     attendance,
     partySize,
     additionalGuestNames,
+    additionalGuestSelections,
     error,
     submitted,
     isSubmitting,
@@ -259,6 +336,7 @@ export const useRsvpForm = () => {
     handleGuestSelect,
     handlePartySizeChange,
     handleAdditionalGuestNameChange,
+    handleAdditionalGuestSelect,
     handleSubmit,
   };
 };

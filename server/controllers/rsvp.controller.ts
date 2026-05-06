@@ -72,6 +72,20 @@ export const submitRsvp = (req: Request, res: Response) => {
             throw new Error("Additional guest name is required.");
           }
 
+          if (extraGuest.id) {
+            if (extraGuest.id === guestId) {
+              throw new Error("Additional guests cannot match the primary guest.");
+            }
+
+            const matchedGuestResult = updateGuest.run(1, extraGuest.id);
+
+            if (matchedGuestResult.changes === 0) {
+              throw new Error("Matched additional guest not found.");
+            }
+
+            continue;
+          }
+
           insertPlusOne.run(guestId, extraGuest.name.trim(), 1);
         }
       }
@@ -92,5 +106,4 @@ export const submitRsvp = (req: Request, res: Response) => {
     });
   }
 };
-
 

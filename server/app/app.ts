@@ -13,6 +13,10 @@ import adminGuestRoutes from "../routes/adminGuests.routes.ts";
 
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
+const allowedOrigins = new Set([
+  "https://www.jasmenandlucas.com",
+  "https://jasmenandlucas.com",
+]);
 
 if (isProduction) {
   app.set("trust proxy", 1);
@@ -22,11 +26,21 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://www.jasmenandlucas.com",
-      "https://jasmenandlucas.com",
-    ],
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const isLocalViteOrigin = /^http:\/\/localhost:51\d{2}$/.test(origin);
+
+      if (isLocalViteOrigin || allowedOrigins.has(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Origin not allowed by CORS"));
+    },
     credentials: true,
   })
 );

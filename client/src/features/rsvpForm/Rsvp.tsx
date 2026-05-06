@@ -11,6 +11,7 @@ const Rsvp = () => {
     attendance,
     partySize,
     additionalGuestNames,
+    additionalGuestSelections,
     error,
     submitted,
     isSubmitting,
@@ -19,6 +20,7 @@ const Rsvp = () => {
     handleGuestSelect,
     handlePartySizeChange,
     handleAdditionalGuestNameChange,
+    handleAdditionalGuestSelect,
     handleSubmit,
   } = useRsvpForm();
 
@@ -78,18 +80,19 @@ const Rsvp = () => {
                 <label htmlFor="plusOneName" className="text-accent">
                   What is the name of your plus one?
                 </label>
-                <input
+                <GuestAutocomplete
                   id="plusOneName"
-                  type="text"
                   value={additionalGuestNames[0] ?? ""}
-                  autoComplete="name"
-                  autoCapitalize="words"
-                  autoCorrect="off"
-                  onChange={(e) =>
-                    handleAdditionalGuestNameChange(0, e.target.value)
+                  onChange={(value) =>
+                    handleAdditionalGuestNameChange(0, value)
                   }
-                  className="min-h-11 rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
+                  onSelect={(guest) => handleAdditionalGuestSelect(0, guest)}
                 />
+                {additionalGuestSelections[0] && (
+                  <p className="text-xs text-green-300">
+                    Selected: {additionalGuestSelections[0].name}
+                  </p>
+                )}
               </div>
             )}
 
@@ -113,20 +116,24 @@ const Rsvp = () => {
                 {additionalGuestNames.length > 0 &&
                   additionalGuestNames.map((value, index) => (
                     <div className="grid gap-2" key={`extra-guest-${index}`}>
-                      <label className="text-accent">
+                      <label htmlFor={`extraGuestName-${index}`} className="text-accent">
                         Guest {index + 2} Name
                       </label>
-                      <input
-                        type="text"
+                      <GuestAutocomplete
+                        id={`extraGuestName-${index}`}
                         value={value}
-                        autoComplete="name"
-                        autoCapitalize="words"
-                        autoCorrect="off"
-                        onChange={(e) =>
-                          handleAdditionalGuestNameChange(index, e.target.value)
+                        onChange={(nextValue) =>
+                          handleAdditionalGuestNameChange(index, nextValue)
                         }
-                        className="min-h-11 rounded-xl bg-white px-4 py-3 text-base text-primary outline-none"
+                        onSelect={(guest) =>
+                          handleAdditionalGuestSelect(index, guest)
+                        }
                       />
+                      {additionalGuestSelections[index] && (
+                        <p className="text-xs text-green-300">
+                          Selected: {additionalGuestSelections[index].name}
+                        </p>
+                      )}
                     </div>
                   ))}
               </>
